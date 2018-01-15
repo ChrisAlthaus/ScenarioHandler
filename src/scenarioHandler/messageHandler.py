@@ -115,7 +115,14 @@ def setLed(side,operation,led,color):
 
     print("LIGHT:"+str(side)+"//"+str(operation)+"//"+str(led)+"//"+str(color))
     send_arduino(message)
+
+def setBrightness(brightness):
+    message=[]
+    message.append(modes["BRIGHTNESS"])
     
+    message.append(brightness)
+    
+    send_arduino(message)    
     
 def clearSide(side):
     message=[]

@@ -18,7 +18,7 @@ def main():
     time.sleep(10)
     init_spi()
     
-    while getWifiIPAddress() is None:
+    while isWifiConnected() is False:
         print("Wifi not connected")
 	showWifiConnectionError()
 	time.sleep(60)
@@ -29,9 +29,6 @@ def main():
     display.displayData()
     
     #bind tcp socket
-    #host_ip = getWifiIPAddress()
-   # port = 5560
-	
     setupServer()
     
     while True:
@@ -62,23 +59,18 @@ def main():
     
     
     
-def getWifiAddress2():
-    wifi_ip = check_output(['ifconfig','$wlan0 |grep "inet addr"'])
+def isWifiConnected():
+    wifi_ip = check_output(['hostname','-I'])
     print("length=",len(wifi_ip))
     if wifi_ip.isspace() or not wifi_ip:
-        return None
+        return False
     else:
         print("wifi address found:",wifi_ip)
-	return wifi_ip
+	return True  
 	
-def getWifiIPAddress():    
-   host_ip= check_output(['hostname','-I'])
-   if host_ip.isspace() or not host_ip:
-	print("no host ip found")
-	return None
-   else:
-	return host_ip
-	
+def hostIPAddressAvailable():
+	host_ip = check_output
+
         
 def showWifiConnectionError():
    setSingleAnimation("PULSESLOW", "A", NUMBER_LEDS, 10000, colors['red'])  #show warning, if url unreachable
@@ -131,15 +123,14 @@ def parseMessage(message):
             print("No SearchPath.") #error log
     
     if mode=="SET":
-        delay= int(values[0])
-        brightness=int(values[1])
+        delay= values[0]
+        brightness=values[1]
         
         if delay is not "NULL":
             display.delay=delay
         if brightness is not "NULL":
             setBrightness(brightness)
-    if mode=="STATUS":
-        sendStatusFiles()             
+            
 
 def scaleValue(value): #scale value, e.g. distribution,intervalls
     
