@@ -2,6 +2,7 @@ from valueHolder import *
 from messageHandler import *
 from displayHandler import *
 from messageReceiver import *
+from test import *
 import time
 
 from subprocess import check_output
@@ -139,7 +140,9 @@ def parseMessage(message):
         if brightness is not "NULL":
             setBrightness(brightness)
     if mode=="STATUS":
-        sendStatusFiles()             
+        print "send status files"
+	sendStatusFiles()
+	hello()             
 
 def scaleValue(value): #scale value, e.g. distribution,intervalls
     

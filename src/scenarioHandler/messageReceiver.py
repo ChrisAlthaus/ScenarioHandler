@@ -1,9 +1,10 @@
 import socket
 from subprocess import check_output
-from scenarioHandler import *
+from scenarioHandler import parseMessage
 
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 
 def setupServer():
     print ("Socket created")
@@ -34,7 +35,7 @@ def receiveMessageAndParse(conn):
                 # happens when connection is reset from the peer
                 print("Connection reset")
 		break
-            
+       
             if data == "quit":
                 #quit command to regulary disconnect
 		print("Quit current connection")
