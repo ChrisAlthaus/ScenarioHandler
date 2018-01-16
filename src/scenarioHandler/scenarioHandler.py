@@ -140,9 +140,7 @@ def parseMessage(message):
         if brightness is not "NULL":
             setBrightness(brightness)
     if mode=="STATUS":
-        print "send status files"
-	sendStatusFiles()
-	hello()             
+        sendStatusFiles()               
 
 def scaleValue(value): #scale value, e.g. distribution,intervalls
     
