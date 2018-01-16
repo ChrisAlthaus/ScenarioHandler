@@ -16,15 +16,15 @@ display=displayHandler(10)
 addSubValue=0
 
 def main():
-    time.sleep(10)
+    #time.sleep(10)
+    
     init_spi()
     
     while getWifiIPAddress() is None:
         print("Wifi not connected")
 	showWifiConnectionError()
 	time.sleep(60)
-        
-    
+            
     
     #start timer thread, which periodically updates MovingBar
     display.displayData()
@@ -34,10 +34,10 @@ def main():
    # port = 5560
 	
     setupServer()
-    
+     
     while True:
-        conn= setupConnection()
-        receiveMessageAndParse(conn)
+        setupConnection()
+        receiveMessageAndParse()
         
         
         
@@ -60,8 +60,7 @@ def main():
     message+="//None//main,humidity"
     
     #parseMessage(message)
-    
-    
+     
     
 def getWifiAddress2():
     wifi_ip = check_output(['ifconfig','$wlan0 |grep "inet addr"'])
@@ -73,19 +72,19 @@ def getWifiAddress2():
 	return wifi_ip
 	
 def getWifiIPAddress():    
-   host_ip= check_output(['hostname','-I'])
-   if host_ip.isspace() or not host_ip:
-	print("no host ip found")
-	return None
-   else:
+    host_ip= check_output(['hostname','-I'])
+    if host_ip.isspace() or not host_ip:
+        print("no host ip found")
+        return None
+    else:
 	return host_ip
 	
         
 def showWifiConnectionError():
-   setSingleAnimation("PULSESLOW", "A", NUMBER_LEDS, 10000, colors['red'])  #show warning, if url unreachable
-   setSingleAnimation("PULSESLOW", "B", NUMBER_LEDS, 10000, colors['red'])
-   setSingleAnimation("PULSESLOW", "C", NUMBER_LEDS, 10000, colors['red'])
-   setSingleAnimation("PULSESLOW", "D", NUMBER_LEDS, 10000, colors['red'])
+    setSingleAnimation("PULSESLOW", "A", NUMBER_LEDS, 10000, colors['red'])  #show warning, if url unreachable
+    setSingleAnimation("PULSESLOW", "B", NUMBER_LEDS, 10000, colors['red'])
+    setSingleAnimation("PULSESLOW", "C", NUMBER_LEDS, 10000, colors['red'])
+    setSingleAnimation("PULSESLOW", "D", NUMBER_LEDS, 10000, colors['red'])
 	      
 
 #DISPLAY:SIDE//DIPLAYCOLOR//REFCOLOR//REFERENCEVALUE//STEPSIZE//MODE//BRIGHTNESS//URL//PATHXML//PATHJSON    #TODO: RANGEMAPPING
@@ -139,8 +138,8 @@ def parseMessage(message):
             display.delay=delay
         if brightness is not "NULL":
             setBrightness(brightness)
-    if mode=="STATUS":
-        sendStatusFiles()               
+                  
+
 
 def scaleValue(value): #scale value, e.g. distribution,intervalls
     

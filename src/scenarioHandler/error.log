@@ -1,6 +1,10 @@
 Traceback (most recent call last):
-  File "scenarioHandler.py", line 181, in <module>
+  File "scenarioHandler.py", line 186, in <module>
     main()
-  File "scenarioHandler.py", line 19, in main
-    time.sleep(10)
+  File "scenarioHandler.py", line 39, in main
+    setupConnection()
+  File "/home/pi/scenarioHandler/src/scenarioHandler/messageReceiver.py", line 31, in setupConnection
+    conn, address = s.accept()
+  File "/usr/lib/python2.7/socket.py", line 202, in accept
+    sock, addr = self._sock.accept()
 KeyboardInterrupt
