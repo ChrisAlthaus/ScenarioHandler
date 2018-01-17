@@ -44,7 +44,6 @@ class ValueHolder:
         
         self.value=referenceValue
         self.previousValue=referenceValue
-        print "path json", pathOfValueJSON
         
     #def scale(self):        #scale value, e.g. unit conversion
      #   if self.scaleFunction is not None:
@@ -55,12 +54,15 @@ class ValueHolder:
         responseData=None
         try:
             r = requests.get(self.requestURL)
-            responseData = r.json()
+            responseData = r.json
+            print responseData
         except requests.exceptions.RequestException as e:
             printError(e)   #error log
+            print "request excpetion"
             setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, colors['yellow'])  #show warning, if url unreachable
         except ValueError as  e:
             printError(e)   #error log
+            print "value error"
             setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, colors['orange'])   #show warning, if parse error
         
         return responseData

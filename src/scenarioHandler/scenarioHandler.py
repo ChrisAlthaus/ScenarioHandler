@@ -78,7 +78,7 @@ def parseMessage(message):
     mode= message[0:seperatorIndex]
     values= message[seperatorIndex+1:messageLength]
     values = values.split("//")
-    print(values)
+   
     
     if mode == "DISPLAY":
         side=values[0]
@@ -93,18 +93,15 @@ def parseMessage(message):
         
         pathXML=None
         pathJson=None
-        
-        if(values[7] is not "null"):
+        if(values[7] != "null"):
             pathXML=values[7].split(",")
-            print "pathXML=",pathXML
-        if(values[8] is not "null"):
-            pathJson=values[8].split(",")
-            print "pathJSON", pathJson  
+        elif(values[8] != "null"):
+            pathJson=values[8].split(",")  
         
         if(pathJson is not None):
-            addNewValueObject(side,displayColor,referenceColor,referenceValue,stepSize,mode,requestURL,pathXML,None)
-        elif(pathXML is not None):
             addNewValueObject(side,displayColor,referenceColor,referenceValue,stepSize,mode,requestURL,None,pathJson)
+        elif(pathXML is not None):
+            addNewValueObject(side,displayColor,referenceColor,referenceValue,stepSize,mode,requestURL,pathXML,None)
         else:
             printError("No path to value in either xml or json.") #error log
     

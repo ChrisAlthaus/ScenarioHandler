@@ -3,5 +3,117 @@ Socket created
 Socket bind complete.
 ('Host ip:', '192.168.1.29 \n', ',Port:', 5560)
 Listen on a client...
+Connected to: 192.168.1.31:53629
+('Received data=', 'DISPLAY:A//990000//ffffff//250//10//From bottom to top//api.openweathermap.org/data/2.5/weather?q=Hannover&APPID=d1e9d70bdb58b701b0366495d128403d//null//main,temp')
+('Parsing message:', 'DISPLAY:A//990000//ffffff//250//10//From bottom to top//api.openweathermap.org/data/2.5/weather?q=Hannover&APPID=d1e9d70bdb58b701b0366495d128403d//null//main,temp')
+compare, null ,null,
+setJson
+add new value object with pathJson= ['main', 'temp']
+add new value object
+CLEARSIDE:A
+Send via SPI:0000
+[6, 1, 3]
+('Received data=', 'DISPLAY:B//b34d1a//ffffff//250//5//From bottom to top//api.openweathermap.org/data/2.5/weather?q=Hannover&APPID=d1e9d70bdb58b701b0366495d128403d&mode=xml//temperature,value//null')
+('Parsing message:', 'DISPLAY:B//b34d1a//ffffff//250//5//From bottom to top//api.openweathermap.org/data/2.5/weather?q=Hannover&APPID=d1e9d70bdb58b701b0366495d128403d&mode=xml//temperature,value//null')
+compare, temperature,value ,null,
+setXML
+add new value object with pathXML= ['temperature', 'value']
+add new value object
+CLEARSIDE:B
+Send via SPI:0000
+[6, 2, 3]
+('Received data=', 'STATUS:')
+file position= 0
+file position= 0
 display data
+side= A
+('side: ', 'A')
+('display color: ', '990000')
+('reference color: ', 'ffffff')
+('mode: ', 'From bottom to top')
+('stepSize: ', 10.0)
+('requestURL= ', 'http://api.openweathermap.org/data/2.5/weather?q=Hannover&APPID=d1e9d70bdb58b701b0366495d128403d')
+('XML path: ', None)
+('JSON path: ', ['main', 'temp'])
+{u'clouds': {u'all': 75}, u'name': u'Hanover', u'visibility': 10000, u'sys': {u'country': u'DE', u'sunset': 1516203701, u'message': 0.022, u'type': 1, u'id': 4893, u'sunrise': 1516173684}, u'weather': [{u'main': u'Snow', u'id': 612, u'icon': u'13d', u'description': u'shower sleet'}, {u'main': u'Rain', u'id': 521, u'icon': u'09d', u'description': u'shower rain'}], u'coord': {u'lat': 52.37, u'lon': 9.74}, u'base': u'stations', u'dt': 1516198800, u'main': {u'pressure': 997, u'temp_min': 275.15, u'temp_max': 275.15, u'temp': 275.15, u'humidity': 97}, u'id': 3221033, u'wind': {u'speed': 6.7, u'deg': 250}, u'cod': 200}
+new value= 275.15
+(3, 0)
+LIGHT:A//ADD//1//ffffff
+Send via SPI:0000000
+[6, 81, 255, 255, 255, 50]
+LIGHT:A//ADD//2//990000
+Send via SPI:0000000
+[6, 82, 153, 0, 0, 50]
+LIGHT:A//ADD//3//990000
+Send via SPI:0000000
+[6, 83, 153, 0, 0, 50]
+LIGHT:A//ADD//4//990000
+Send via SPI:0000000
+[6, 84, 153, 0, 0, 50]
+('value=', 275.15)
+side= B
+('side: ', 'B')
+('display color: ', 'b34d1a')
+('reference color: ', 'ffffff')
+('mode: ', 'From bottom to top')
+('stepSize: ', 5.0)
+('requestURL= ', 'http://api.openweathermap.org/data/2.5/weather?q=Hannover&APPID=d1e9d70bdb58b701b0366495d128403d&mode=xml')
+('XML path: ', ['temperature', 'value'])
+('JSON path: ', None)
+<?xml version="1.0" encoding="UTF-8"?>
+<current><city id="3221033" name="Hanover"><coord lon="9.74" lat="52.37"></coord><country>DE</country><sun rise="2018-01-17T07:21:24" set="2018-01-17T15:41:40"></sun></city><temperature value="275.15" min="275.15" max="275.15" unit="kelvin"></temperature><humidity value="97" unit="%"></humidity><pressure value="997" unit="hPa"></pressure><wind><speed value="6.7" name="Moderate breeze"></speed><gusts></gusts><direction value="250" code="WSW" name="West-southwest"></direction></wind><clouds value="75" name="broken clouds"></clouds><visibility value="10000"></visibility><precipitation mode="no"></precipitation><weather number="612" value="shower sleet" icon="13d"></weather><lastupdate value="2018-01-17T14:20:00"></lastupdate></current>
+<Element 'current' at 0x7678bad0>
+parse field: temperature
+new value= 275.15
+(5, 0)
+LIGHT:B//ADD//1//ffffff
+Send via SPI:0000000
+[6, 145, 255, 255, 255, 50]
+LIGHT:B//ADD//2//b34d1a
+Send via SPI:0000000
+[6, 146, 179, 77, 26, 50]
+LIGHT:B//ADD//3//b34d1a
+Send via SPI:0000000
+[6, 147, 179, 77, 26, 50]
+LIGHT:B//ADD//4//b34d1a
+Send via SPI:0000000
+[6, 148, 179, 77, 26, 50]
+LIGHT:B//ADD//5//b34d1a
+Send via SPI:0000000
+[6, 149, 179, 77, 26, 50]
+LIGHT:B//ADD//6//b34d1a
+Send via SPI:0000000
+[6, 150, 179, 77, 26, 50]
+('value=', 275.15)
+Connection reset
+Listen on a client...
 display data
+side= A
+('side: ', 'A')
+('display color: ', '990000')
+('reference color: ', 'ffffff')
+('mode: ', 'From bottom to top')
+('stepSize: ', 10.0)
+('requestURL= ', 'http://api.openweathermap.org/data/2.5/weather?q=Hannover&APPID=d1e9d70bdb58b701b0366495d128403d')
+('XML path: ', None)
+('JSON path: ', ['main', 'temp'])
+{u'clouds': {u'all': 75}, u'name': u'Hanover', u'visibility': 10000, u'sys': {u'country': u'DE', u'sunset': 1516203700, u'message': 0.0035, u'type': 1, u'id': 4893, u'sunrise': 1516173684}, u'weather': [{u'main': u'Snow', u'id': 612, u'icon': u'13d', u'description': u'shower sleet'}, {u'main': u'Rain', u'id': 521, u'icon': u'09d', u'description': u'shower rain'}], u'coord': {u'lat': 52.37, u'lon': 9.74}, u'base': u'stations', u'dt': 1516198800, u'main': {u'pressure': 997, u'temp_min': 275.15, u'temp_max': 275.15, u'temp': 275.15, u'humidity': 97}, u'id': 3221033, u'wind': {u'speed': 6.7, u'deg': 250}, u'cod': 200}
+new value= 275.15
+(3, 3)
+('value=', 275.15)
+side= B
+('side: ', 'B')
+('display color: ', 'b34d1a')
+('reference color: ', 'ffffff')
+('mode: ', 'From bottom to top')
+('stepSize: ', 5.0)
+('requestURL= ', 'http://api.openweathermap.org/data/2.5/weather?q=Hannover&APPID=d1e9d70bdb58b701b0366495d128403d&mode=xml')
+('XML path: ', ['temperature', 'value'])
+('JSON path: ', None)
+<?xml version="1.0" encoding="UTF-8"?>
+<current><city id="3221033" name="Hanover"><coord lon="9.74" lat="52.37"></coord><country>DE</country><sun rise="2018-01-17T07:21:24" set="2018-01-17T15:41:40"></sun></city><temperature value="275.15" min="275.15" max="275.15" unit="kelvin"></temperature><humidity value="97" unit="%"></humidity><pressure value="997" unit="hPa"></pressure><wind><speed value="6.7" name="Moderate breeze"></speed><gusts></gusts><direction value="250" code="WSW" name="West-southwest"></direction></wind><clouds value="75" name="broken clouds"></clouds><visibility value="10000"></visibility><precipitation mode="no"></precipitation><weather number="612" value="shower sleet" icon="13d"></weather><lastupdate value="2018-01-17T14:20:00"></lastupdate></current>
+<Element 'current' at 0x7678b0b0>
+parse field: temperature
+new value= 275.15
+(5, 5)
+('value=', 275.15)

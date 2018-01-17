@@ -1,5 +1,5 @@
 Traceback (most recent call last):
-  File "scenarioHandler.py", line 183, in <module>
+  File "scenarioHandler.py", line 162, in <module>
     main()
   File "scenarioHandler.py", line 39, in main
     setupConnection()
