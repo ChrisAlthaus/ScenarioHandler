@@ -8,16 +8,16 @@ class displayHandler():
     #index=0
     
     def __init__(self,delay):
+        #threading.Thread.__init__(self)
         self.delay=delay    #delay in seconds
         
         
     def displayData(self):
         print("display data")
         for i in range(0,4):
-                if(self.displays[i] is not None):
-                    print "side=", self.displays[i].side
-                    self.displays[i].printValueHolder()
-                    self.displays[i].setValue()
+                if(
+self.displays[i] is not None):
+                    #self.displays[i].setValue()
                     #self.displays[i].value=self.testValues[self.index]
                     #self.index= self.index + 1
                     #self.displays[i].displayFromBottomToTopMovingHeight()

@@ -2,16 +2,15 @@ from valueHolder import *
 from messageHandler import *
 from displayHandler import *
 from messageReceiver import *
-from test import *
+import atexit
 import time
 
 from subprocess import check_output
 
 
 spi= None
-
             
-display=displayHandler(10)
+display=displayHandler(30)
 
 addSubValue=0
 
@@ -34,32 +33,12 @@ def main():
    # port = 5560
 	
     setupServer()
-     
+    atexit.register(exitHandlerFunction)
+ 
     while True:
         setupConnection()
         receiveMessageAndParse()
-        
-        
-        
     
-    
-    message="DISPLAY:C//3FE71A//FFFFFF//10//5//FROMBOTTOMTOTOP"
-    message+="//api.openweathermap.org/data/2.5over&APPID=d1e9d70bdb58b701b0366495d128403d&mode=xml"
-    message+="//temperature,value//None"
-    
-   # parseMessage(message)
-   
-    message="DISPLAY:A//3FE71A//FFFFFF//273//5//FROMBOTTOMTOTOP"
-    message+="//api.openweathermap.org/data/2.5over&APPID=d1e9d70bdb58b701b0366495d128403d&mode=xml"
-    message+="//temperature,value//None"
-    
-    #parseMessage(message)
-    
-    message="DISPLAY:B//2347d7//b1b6b1//0//12//FROMBOTTOMTOTOP"
-    message+="//api.openweathermap.org/data/2.5/weather?q=Hannover&APPID=d1e9d70bdb58b701b0366495d128403d"
-    message+="//None//main,humidity"
-    
-    #parseMessage(message)
      
     
 def getWifiAddress2():
@@ -88,9 +67,7 @@ def showWifiConnectionError():
 	      
 
 #DISPLAY:SIDE//DIPLAYCOLOR//REFCOLOR//REFERENCEVALUE//STEPSIZE//MODE//BRIGHTNESS//URL//PATHXML//PATHJSON    #TODO: RANGEMAPPING
-
-#TEMPERATURE:TIME//CITY//COUNTRY//BARSIDE//BRIGHTNESS
-#RAIN:TIME//CITY//COUNTRY//BARSIDE//BRIGHTNESS
+#SET:SAMPLETIMEDELAY//BRIGHTNESS
 
 
 def parseMessage(message):
@@ -117,31 +94,32 @@ def parseMessage(message):
         pathXML=None
         pathJson=None
         
-        if(values[7] != "None"):
+        if(values[7] is not "null"):
             pathXML=values[7].split(",")
-        if(values[8] != "None"):
+            print "pathXML=",pathXML
+        if(values[8] is not "null"):
             pathJson=values[8].split(",")
-              
+            print "pathJSON", pathJson  
         
-        if(pathJson is None):
+        if(pathJson is not None):
             addNewValueObject(side,displayColor,referenceColor,referenceValue,stepSize,mode,requestURL,pathXML,None)
-        elif(pathXML is None):
+        elif(pathXML is not None):
             addNewValueObject(side,displayColor,referenceColor,referenceValue,stepSize,mode,requestURL,None,pathJson)
         else:
-            print("No SearchPath.") #error log
+            printError("No path to value in either xml or json.") #error log
     
     if mode=="SET":
         delay= int(values[0])
         brightness=int(values[1])
         
-        if delay is not "NULL":
+        if delay is not "null":
             display.delay=delay
-        if brightness is not "NULL":
+        if brightness is not "null":
             setBrightness(brightness)
                   
 
 
-def scaleValue(value): #scale value, e.g. distribution,intervalls
+def scaleValue(value): #TODO: scale value, e.g. distribution,intervalls
     
     return value
     
@@ -160,6 +138,8 @@ def scaleFunctionRain(millimeterPerHour):
 def addNewValueObject(side,displayColor,referenceColor,referenceValue,stepSize,mode,requestURL,pathOfValueXML,pathOfValueJSON):
     newValueObject= ValueHolder(side,displayColor,referenceColor,referenceValue,stepSize,mode,requestURL,pathOfValueXML,pathOfValueJSON)
     
+    print "add new value object"
+
     if(side=='A'):
         clearSide("A")
         display.addNewValueObject(newValueObject,0)
@@ -173,7 +153,8 @@ def addNewValueObject(side,displayColor,referenceColor,referenceValue,stepSize,m
         clearSide("D")
         display.addNewValueObject(newValueObject,3)
         
-
+def exitHandlerFunction():
+   closeTcpConnection()
 
 if __name__== '__main__':
     main()

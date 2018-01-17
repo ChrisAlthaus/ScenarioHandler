@@ -1,9 +1,7 @@
+display data
 Socket created
 Socket bind complete.
+('Host ip:', '192.168.1.29 \n', ',Port:', 5560)
 Listen on a client...
-Connected to: 192.168.1.31:52367
-('Received data=', 'STATUS:')
-('Received data=', 'STATUS:')
-('Received data=', 'STATUS:')
-Connection reset
-Listen on a client...
+display data
+display data

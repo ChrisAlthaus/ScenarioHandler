@@ -18,11 +18,16 @@ def setupServer():
     except socket.error as msg:
         print(msg)
     print("Socket bind complete.")
+    print("Host ip:", host, ",Port:", port)
     return s
 
 def setupConnection():
     global conn
     global address
+
+    if conn is not None:
+      conn.close()
+
     print("Listen on a client...")
     s.listen(1) # Allows one connection at a time.
     conn, address = s.accept()
@@ -51,7 +56,10 @@ def receiveMessageAndParse():
 
 def sendFile(filePath):
     with open(filePath) as f:
+       print "file position=",f.tell()
+       f.seek(0)
        lines = f.readlines()
+       
        for line in lines:
           conn.send(line)
 
@@ -65,8 +73,9 @@ def sendStatusFiles():
     conn.send("EOF\n")
 
 def closeTcpConnection():
-    s.close()
-    conn.close()
+    if s is not None and conn is not None:
+       s.close()
+       conn.close()
 	            
 
 

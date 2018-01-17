@@ -4,12 +4,12 @@ sys.path.append('..')
 from xml.etree import ElementTree
 import requests
 from messageHandler import *
-
+from utility import *
 
 MAX_LED_BRIGHTNESS = 100
 NUMBER_LEDS_WITH_HEIGHT = 19
 NUMBER_LEDS = 11
-UPPER_BUFFER = 1  #to recognize highest led, led range[1,9]
+UPPER_BUFFER = 1  #to recognize highest led, led range[1,10]
 REFERENCE_RELATIVE = 6
 REFERENCE_LEDS = 1
 STEP_MODE_HEIGHT_MOVEMENT = "HALF"
@@ -28,8 +28,7 @@ class ValueHolder:
     value=0
     referenceLedInit=False
     overfilledWarning=False
-    currentHeight=0  
-     #TODO: displayMode
+    currentHeight=0
     
     def __init__(self,side,displayColor,referenceColor,referenceValue,stepSize,mode,requestURL,pathOfValueXML,pathOfValueJSON):
         self.requestURL="http://"+requestURL
@@ -45,8 +44,7 @@ class ValueHolder:
         
         self.value=referenceValue
         self.previousValue=referenceValue
-        
-        print(self.referenceValue)
+        print "path json", pathOfValueJSON
         
     #def scale(self):        #scale value, e.g. unit conversion
      #   if self.scaleFunction is not None:
@@ -59,10 +57,10 @@ class ValueHolder:
             r = requests.get(self.requestURL)
             responseData = r.json()
         except requests.exceptions.RequestException as e:
-            print(e)
+            printError(e)   #error log
             setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, colors['yellow'])  #show warning, if url unreachable
         except ValueError as  e:
-            print(e)
+            printError(e)   #error log
             setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, colors['orange'])   #show warning, if parse error
         
         return responseData
@@ -71,13 +69,15 @@ class ValueHolder:
         responseData=None
         try:
             r = requests.get(self.requestURL)
+            print r.content
             responseData= ElementTree.fromstring(r.content)
         except requests.exceptions.RequestException as e:
-            print(e)
+            printError(e)  #error log
             setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, colors['yellow'])  #show warning, if url unreachable
-        except ElementTree.ParseError:
+        except ElementTree.ParseError as e:
             setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, colors['orange'])  #show warning, if parse error
-        
+            printError(e)  #error log
+
         return responseData
             
     def setValueJson(self):
@@ -86,14 +86,14 @@ class ValueHolder:
         valueField=self.requestJSON()
         
         if(valueField is None):
-            print("No message received.")
+            printError("No message received.")
             return
             
         for item in self.pathOfValueJSON:
             if item in valueField:
                 valueField= valueField[item]
             else:
-                print("JSON value not found.")
+                printError("JSON entry ",valueField[item] ," not found.")
                 return                    #error log
         
         if isinstance(valueField,int):
@@ -105,28 +105,33 @@ class ValueHolder:
         if isinstance(valueField,str):
             self.value=float(valueField)
         
-        #self.setAddSubValue()    
-       #self.scale()
+        print "new value=",valueField
     
     def setValueXML(self):
         self.previousValue=self.value
         
         valueField=self.requestXML()
-        
+        print valueField
+   
         if(valueField is None):
-            print("No message received.")
+            printError("No message received.")
             return
             
         numberItems= len(self.pathOfValueXML)
         node=valueField
         
         for i in range(0,numberItems-1):
-            node=node.find(self.pathOfValueXML[i])
+           if node is not None:
+              print "parse field:",self.pathOfValueXML[i]
+              node=node.find(self.pathOfValueXML[i])
+	   else:
+              printError("XML parsing error: entry ",self.pathOfValueXML[i], " not found")
+              return
         
         temp = node.get(self.pathOfValueXML[numberItems-1])
         
-        if(temp is None or node is None):
-            print("XML value not found.")
+        if(temp is None):
+            printError("XML parsing error: entry ", self.pathOfValueXML[numberItems-1], " not found.")
             return                                #log error
         
         if isinstance(temp,int):
@@ -136,39 +141,37 @@ class ValueHolder:
         if isinstance(temp,str):
             self.value=float(temp)
         
-        
-        #self.setAddSubValue()
-        #self.scale()
+        print "new value=",temp
         
         
     def setValue(self):
-        #print(self.requestURL)
         if self.pathOfValueJSON is None and self.pathOfValueXML is not None:
             self.setValueXML()
         elif self.pathOfValueXML is None and self.pathOfValueJSON is not None:
             self.setValueJson()
         else:
-            print("No path value set.")        #error log
-        
+            printError("No path value set.")        #error log
+    
         
     def display(self):
-        if(self.mode=="FROMBOTTOMTOTOP"):
+       
+        if(self.mode=="From bottom to top"):
             self.displayFromBottomToTop()
-        elif(self.mode=="RELATIVE"):
+        elif(self.mode=="Relative"):
             self.displayRelative()
-        elif(self.mode=="MOVINGHEIGHT"):
+        elif(self.mode=="Moving height"):
             self.displayFromBottomToTopMovingHeight()
         else:
-            print("No valid display mode")
+            printError("No valid display mode")
             
             
         
     def displayRelative(self):
         previousNumberLeds=int(round((self.previousValue-self.referenceValue)/self.stepSize))
         numberLeds=int(round((self.value-self.referenceValue)/self.stepSize))
-        print(numberLeds,previousNumberLeds)
-        print(self.previousValue,self.value)
-        print(self.referenceValue)
+        #print(numberLeds,previousNumberLeds)
+        #print(self.previousValue,self.value)
+        #print(self.referenceValue)
         
         if(self.referenceLedInit is False):
             setLed(self.side,"ADD",6,self.referenceColor)    #set reference white led
@@ -223,7 +226,7 @@ class ValueHolder:
         
         previousNumberLeds=int(round((self.previousValue-self.referenceValue)/self.stepSize))
         numberLeds=int(round((self.value-self.referenceValue)/self.stepSize))  
-        print("current value=", self.value)          
+        #print("current value=", self.value)          
         
         if(numberLeds<0): #set to zero leds
             numberLeds=0
@@ -232,7 +235,7 @@ class ValueHolder:
         
         print(numberLeds,previousNumberLeds)
            
-        maxQuantity=NUMBER_LEDS-UPPER_BUFFER-REFERENCE_LEDS       #led number range [1,9]
+        maxQuantity=NUMBER_LEDS-UPPER_BUFFER-REFERENCE_LEDS       #led number range [1,10]
         
         if(numberLeds>maxQuantity):          
             numberLeds=maxQuantity
@@ -252,8 +255,7 @@ class ValueHolder:
                 setLed(self.side,"ADD",1,self.referenceColor)    #set reference white led
                 self.referenceLedInit=True
               
-        if(numberLeds>previousNumberLeds):  #led display range [REFERENCE_LEDS+1,9]
-            print("display") 
+        if(numberLeds>previousNumberLeds):  #led display range [REFERENCE_LEDS+1,10] 
             setLeds(self.side,"ADD",range(previousNumberLeds+REFERENCE_LEDS,numberLeds+REFERENCE_LEDS+1)[1:],self.color) 
         elif(numberLeds<previousNumberLeds):
             setLeds(self.side,"REMOVE",reversed(range(numberLeds+REFERENCE_LEDS,previousNumberLeds+REFERENCE_LEDS+1)[1:]),0)
@@ -266,8 +268,8 @@ class ValueHolder:
         
         previousNumberLeds=int(round((self.previousValue-self.referenceValue)/self.stepSize))
         numberLeds=int(round((self.value-self.referenceValue)/self.stepSize))
-        print(numberLeds,previousNumberLeds)
-        print(self.previousValue,self.referenceValue)
+        #print(numberLeds,previousNumberLeds)
+        #print(self.previousValue,self.referenceValue)
         
         if(numberLeds<0): #set to zero leds
             numberLeds=0
@@ -303,7 +305,13 @@ class ValueHolder:
             
         self.previousValue=self.value  
          
-       
-        
-
-
+      
+    def printValueHolder(self):
+       print("side: ", self.side)
+       print("display color: ", self.color)
+       print("reference color: ", self.referenceColor)
+       print("mode: ", self.mode)
+       print("stepSize: ", self.stepSize)
+       print("requestURL= ", self.requestURL)
+       print("XML path: ",self.pathOfValueXML)
+       print("JSON path: ", self.pathOfValueJSON)
