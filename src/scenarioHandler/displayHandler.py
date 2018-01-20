@@ -1,12 +1,17 @@
 import threading
 import copy
-            
+import time
+
+def singleton(cls):
+    return cls()
+
+@singleton            
 class displayHandler():
     
     displays=[None]*4   
     #testValues=[40,45,50,55,60,70,20,30,40]
     #index=0
-    delay=40
+    delay=60
    # def __init__(self,delay):
     #    self.delay=delay    #delay in seconds
     #TODO: copy display list to avoid NoneType error
@@ -15,8 +20,8 @@ class displayHandler():
         
     def displayData(self):
         print("display data")
-        threadDisplays = copy.deepcopy(self.displays)
-
+      
+	threadDisplays = copy.deepcopy(self.displays)
         for i in range(0,4):
                 if(threadDisplays[i] is not None):
                     print "side=", threadDisplays[i].side
@@ -27,7 +32,7 @@ class displayHandler():
                     #self.displays[i].displayFromBottomToTopMovingHeight()
                     threadDisplays[i].display()
                     print("value=",threadDisplays[i].value)
-        #print "delay=",self.delay
+        print "delay=",self.delay
         nextCall =threading.Timer(self.delay,self.displayData)
         nextCall.start()
         

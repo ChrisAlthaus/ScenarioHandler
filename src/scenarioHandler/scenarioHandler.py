@@ -10,7 +10,7 @@ from subprocess import check_output
 
 spi= None
             
-display=displayHandler()
+display=displayHandler
 
 addSubValue=0
 
@@ -39,9 +39,8 @@ def main():
            
     #start timer thread, which periodically updates MovingBar
     display.displayData()
+    
     #bind tcp socket
-    #host_ip = getWifiIPAddress()
-   # port = 5560
     setupServer()
     atexit.register(exitHandlerFunction)
     
@@ -120,8 +119,7 @@ def parseMessage(message):
         brightness=int(values[1])
         
         if delay is not "null":
-            #display.delay=delay   ->error, TODO
-            print "error"
+            display.delay=delay
         if brightness is not "null":
             setBrightness(brightness)
      

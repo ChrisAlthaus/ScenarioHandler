@@ -6,7 +6,6 @@ from scenarioHandler import parseMessage
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 conn= None
 address=None
-display=None
     
 def setupServer():
     print ("Socket created")
@@ -35,7 +34,6 @@ def setupConnection():
     print("Connected to: " + address[0] + ":" + str(address[1]))
 
 def receiveMessageAndParse():
-    global display
     while(True):
        try:
           data = conn.recv(1024)
