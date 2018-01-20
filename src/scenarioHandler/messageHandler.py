@@ -128,8 +128,7 @@ def clearSide(side):
     message=[]
     message.append(modes["LIGHT"])
     
-    message.append(sides[side])
-    message.append(lightOperations["CLEARSIDE"])
+    message.append(getSideOperationLedByte(sides[side],lightOperations["CLEARSIDE"],0))
     
     print("CLEARSIDE:"+str(side))
     

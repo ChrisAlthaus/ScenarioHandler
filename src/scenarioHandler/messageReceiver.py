@@ -6,6 +6,7 @@ from scenarioHandler import parseMessage
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 conn= None
 address=None
+display=None
     
 def setupServer():
     print ("Socket created")
@@ -33,8 +34,8 @@ def setupConnection():
     conn, address = s.accept()
     print("Connected to: " + address[0] + ":" + str(address[1]))
 
-
 def receiveMessageAndParse():
+    global display
     while(True):
        try:
           data = conn.recv(1024)
@@ -52,7 +53,7 @@ def receiveMessageAndParse():
        if data == "STATUS:":
 	  sendStatusFiles()	
        else:
-	  parseMessage(data)
+          parseMessage(data)
 
 def sendFile(filePath):
     with open(filePath) as f:

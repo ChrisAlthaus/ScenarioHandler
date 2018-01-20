@@ -238,21 +238,7 @@ class ValueHolder:
         print(numberLeds,previousNumberLeds)
            
         maxQuantity=NUMBER_LEDS-UPPER_BUFFER-REFERENCE_LEDS       #led number range [1,10]
-        
-        if(numberLeds>maxQuantity):          
-            numberLeds=maxQuantity
-            if(self.overfilledWarning is False):
-                setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, self.color)    
-                self.overfilledWarning=True
-        else:
-            if(self.overfilledWarning):
-                setSingleAnimation("OFF", self.side, NUMBER_LEDS, 10000, self.color)  #stop animation
-                setLed(self.side,"REMOVE",NUMBER_LEDS,0)     #clear warning leds,if stopped in on state
-                self.overfilledWarning=False
                    
-        if(previousNumberLeds>maxQuantity):
-            previousNumberLeds=maxQuantity
-            
         if(self.referenceLedInit is False):  #Not initialized
                 setLed(self.side,"ADD",1,self.referenceColor)    #set reference white led
                 self.referenceLedInit=True
@@ -261,7 +247,20 @@ class ValueHolder:
             setLeds(self.side,"ADD",range(previousNumberLeds+REFERENCE_LEDS,numberLeds+REFERENCE_LEDS+1)[1:],self.color) 
         elif(numberLeds<previousNumberLeds):
             setLeds(self.side,"REMOVE",reversed(range(numberLeds+REFERENCE_LEDS,previousNumberLeds+REFERENCE_LEDS+1)[1:]),0)
-            
+        
+
+        if(numberLeds>maxQuantity):          
+    	   numberLeds=maxQuantity
+           if(self.overfilledWarning is False):
+              setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, self.color)    
+              self.overfilledWarning=True
+        else:
+           if(self.overfilledWarning):
+	      setSingleAnimation("OFF", self.side, NUMBER_LEDS, 10000, self.color)  #stop animation
+              setLed(self.side,"REMOVE",NUMBER_LEDS,0)     #clear warning leds,if stopped in on state
+	      previousNumberLeds=maxQuantity
+              self.overfilledWarning=False
+ 
         self.previousValue=self.value
         
         

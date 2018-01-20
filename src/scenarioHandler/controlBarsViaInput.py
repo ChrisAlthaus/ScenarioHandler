@@ -25,9 +25,8 @@ def main():
 			operation=values[1]
 			led=int(values[2])
 			color=int(values[3],16)
-			brightness=int(values[4])
-
-			setLed(side,operation,led,color,brightness)
+	
+			setLed(side,operation,led,color)
 		elif(enteredText=='ANI'):
 		        arguments= raw_input("Enter arguments:")
 			values=arguments.split(",")

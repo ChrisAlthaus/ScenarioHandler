@@ -10,30 +10,41 @@ from subprocess import check_output
 
 spi= None
             
-display=displayHandler(30)
+display=displayHandler()
 
 addSubValue=0
 
 def main():
     #time.sleep(10)
-    
     init_spi()
-    
+    #setLed("A","ADD",11,"42f459")
+    #setLed("B","ADD",11,"42f459")
+    #setLed("C","ADD",11,"42f459")
+    #setLed("D","ADD",11,"42f459")
+   # clearSide("A")
+    #clearSide("B")
+    #clearSide("C")
+    #clearSide("D")
+    #time.sleep(2)
+    #setBrightness(100)
+    #time.sleep(2)
+    #setBrightness(25)
+    #setSingleAnimation("PULSESLOW","A",11,10000,colors['red'])
+    #time.sleep(20)
+    #return
     while getWifiIPAddress() is None:
         print("Wifi not connected")
 	showWifiConnectionError()
 	time.sleep(60)
-            
-    
+           
     #start timer thread, which periodically updates MovingBar
     display.displayData()
-    
     #bind tcp socket
     #host_ip = getWifiIPAddress()
    # port = 5560
-	
     setupServer()
     atexit.register(exitHandlerFunction)
+    
  
     while True:
         setupConnection()
@@ -78,7 +89,6 @@ def parseMessage(message):
     mode= message[0:seperatorIndex]
     values= message[seperatorIndex+1:messageLength]
     values = values.split("//")
-   
     
     if mode == "DISPLAY":
         side=values[0]
@@ -105,16 +115,33 @@ def parseMessage(message):
         else:
             printError("No path to value in either xml or json.") #error log
     
-    if mode=="SET":
+    elif mode=="SET":
         delay= int(values[0])
         brightness=int(values[1])
         
         if delay is not "null":
-            display.delay=delay
+            #display.delay=delay   ->error, TODO
+            print "error"
         if brightness is not "null":
             setBrightness(brightness)
-                  
+     
+    elif mode=="RESETSIDE":
+        side=values[0]
+        resetSide(side)                  
 
+def resetSide(side):
+    if(side=='A'):
+        clearSide("A")
+        display.resetSide(0)
+    elif(side=='B'):
+        clearSide("B")
+        display.resetSide(1)
+    elif(side=='C'):
+        clearSide("C")
+        display.resetSide(2)
+    elif(side=='D'):
+        clearSide("D")
+        display.resetSide(3)
 
 def scaleValue(value): #TODO: scale value, e.g. distribution,intervalls
     
