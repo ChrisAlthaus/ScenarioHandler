@@ -122,7 +122,8 @@ def setBrightness(brightness):
     
     message.append(brightness)
     
-    send_arduino(message)    
+    send_arduino(message)
+    print("BRIGHTNESS:"+str(brightness))    
     
 def clearSide(side):
     message=[]

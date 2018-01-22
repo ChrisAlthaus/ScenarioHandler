@@ -95,7 +95,7 @@ class ValueHolder:
             if item in valueField:
                 valueField= valueField[item]
             else:
-                printError("JSON entry ",valueField[item] ," not found.")
+                printError("JSON entry "+valueField[item] +" not found.")
                 return                    #error log
         
         if isinstance(valueField,int):
@@ -127,13 +127,13 @@ class ValueHolder:
               print "parse field:",self.pathOfValueXML[i]
               node=node.find(self.pathOfValueXML[i])
 	   else:
-              printError("XML parsing error: entry ",self.pathOfValueXML[i], " not found")
+              printError("XML parsing error: entry "+ self.pathOfValueXML[i]+ " not found")
               return
         
         temp = node.get(self.pathOfValueXML[numberItems-1])
         
         if(temp is None):
-            printError("XML parsing error: entry ", self.pathOfValueXML[numberItems-1], " not found.")
+            printError("XML parsing error: entry "+ self.pathOfValueXML[numberItems-1]+ " not found.")
             return                                #log error
         
         if isinstance(temp,int):
@@ -228,7 +228,8 @@ class ValueHolder:
         
         previousNumberLeds=int(round((self.previousValue-self.referenceValue)/self.stepSize))
         numberLeds=int(round((self.value-self.referenceValue)/self.stepSize))  
-        #print("current value=", self.value)          
+        print("current value=", self.value)
+        print("previous value=",self.previousValue)          
         
         if(numberLeds<0): #set to zero leds
             numberLeds=0

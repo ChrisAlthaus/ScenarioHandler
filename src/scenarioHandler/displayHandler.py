@@ -8,7 +8,8 @@ def singleton(cls):
 @singleton            
 class displayHandler():
     
-    displays=[None]*4   
+    displays=[None]*4
+    tempDisplays=[None]*4   
     #testValues=[40,45,50,55,60,70,20,30,40]
     #index=0
     delay=60
@@ -20,25 +21,35 @@ class displayHandler():
         
     def displayData(self):
         print("display data")
-      
-	threadDisplays = copy.deepcopy(self.displays)
+        self.applyTempDisplays()
+ 
+	#threadDisplays = copy.deepcopy(self.displays)
         for i in range(0,4):
-                if(threadDisplays[i] is not None):
-                    print "side=", threadDisplays[i].side
-                    threadDisplays[i].printValueHolder()
-                    threadDisplays[i].setValue()
+                if(self.displays[i] is not None):
+                    print "side=", self.displays[i].side
+                    self.displays[i].printValueHolder()
+                    self.displays[i].setValue()
                     #self.displays[i].value=self.testValues[self.index]
                     #self.index= self.index + 1
                     #self.displays[i].displayFromBottomToTopMovingHeight()
-                    threadDisplays[i].display()
-                    print("value=",threadDisplays[i].value)
+                    self.displays[i].display()
+                    print("value=",self.displays[i].value)
         print "delay=",self.delay
+        #self.displays= copy.deepcopy(threadDisplays)
+
         nextCall =threading.Timer(self.delay,self.displayData)
         nextCall.start()
         
      
     def addNewValueObject(self,newValueObject,index):
-        self.displays[index]= newValueObject
+        self.tempDisplays[index]= newValueObject
+    
+    def applyTempDisplays(self):
+        for i in range(0,4):
+	   if(self.tempDisplays[i] is not None):
+              self.displays[i]=self.tempDisplays[i]
+              self.tempDisplays[i]=None
         
+
     def resetSide(self,index):
         self.displays[index]= None   
