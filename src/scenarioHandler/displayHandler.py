@@ -52,4 +52,5 @@ class displayHandler():
         
 
     def resetSide(self,index):
-        self.displays[index]= None   
+        #setSingleAnimation("OFF",
+	self.displays[index]= None   

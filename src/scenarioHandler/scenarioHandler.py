@@ -17,21 +17,25 @@ addSubValue=0
 def main():
     #time.sleep(10)
     init_spi()
-   # setLed("A","ADD",11,"42f459")
-   # setLed("B","ADD",11,"42f459")
-   # setLed("C","ADD",11,"42f459")
-   # setLed("D","ADD",11,"42f459")
-    #clearSide("A")
-    #clearSide("B")
-    #clearSide("C")
-    #clearSide("D")
+    #setLed("A","ADD",11,"42f459")
+    #setLed("B","ADD",11,"42f459")
+    #setLed("C","ADD",11,"42f459")
+    #setLed("D","ADD",11,"42f459")
+    clearSide("A")
+    clearSide("B")
+    clearSide("C")
+    clearSide("D")
     #time.sleep(2)
     #setBrightness(255)
     #time.sleep(2)
     #setBrightness(100)
     #setSingleAnimation("OFF","A",11,10000,colors['red'])
-    #time.sleep(20)
-   # return
+    #setSingleAnimation("OFF","B",11,10000,colors['green'])
+    #setSingleAnimation("OFF","C",11,10000,colors['green'])
+    #setSingleAnimation("OFF","D",11,10000,colors['red'])   
+    #time.sleep(2)
+   # setLed("A","ADD",10,"42f459")
+    #return
     while getWifiIPAddress() is None:
         print("Wifi not connected")
 	showWifiConnectionError()
@@ -130,16 +134,26 @@ def parseMessage(message):
 def resetSide(side):
     if(side=='A'):
         clearSide("A")
+        resetSingleSideAnimation("A")
         display.resetSide(0)
     elif(side=='B'):
         clearSide("B")
+        resetSingleSideAnimation("B")
         display.resetSide(1)
     elif(side=='C'):
         clearSide("C")
+        resetSingleSideAnimation("C")
         display.resetSide(2)
     elif(side=='D'):
         clearSide("D")
+        resetSingleSideAnimation("D")
         display.resetSide(3)
+
+def resetSingleSideAnimation(side):
+   setSingleAnimation("OFF", side, 1,10000,"FFFFFF")
+   setSingleAnimation("OFF",side,1,10000,"FFFFFF")
+   setSingleAnimation("OFF",side,1,10000,"FFFFFF")
+   setSingleAnimation("OFF",side,1,10000,"FFFFFF")
 
 def scaleValue(value): #TODO: scale value, e.g. distribution,intervalls
     
