@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 import requests
 from messageHandler import *
 from utility import *
+import time
 
 MAX_LED_BRIGHTNESS = 100
 NUMBER_LEDS_WITH_HEIGHT = 19
@@ -29,14 +30,14 @@ class ValueHolder:
     referenceLedInit=False
     overfilledWarning=False
     currentHeight=0
+    isCalibrated=False
     
     def __init__(self,side,displayColor,referenceColor,referenceValue,stepSize,mode,requestURL,pathOfValueXML,pathOfValueJSON):
         self.requestURL="http://"+requestURL
         self.pathOfValueXML=pathOfValueXML
         self.pathOfValueJSON=pathOfValueJSON
         self.referenceValue=referenceValue
-        #self.scaleFunction=scaleFunction
-        self.stepSize=stepSize        #TODO: better intervall with [(min,min+1),....,(max-1,max)]
+        self.stepSize=stepSize      
         self.side=side
         self.color=displayColor
         self.referenceColor=referenceColor
@@ -44,11 +45,7 @@ class ValueHolder:
         
         self.value=referenceValue
         self.previousValue=referenceValue
-        
-    #def scale(self):        #scale value, e.g. unit conversion
-     #   if self.scaleFunction is not None:
-      #      self.value=self.scaleFunction(self.value)
-
+       
     
     def requestJSON(self):
         responseData=None
@@ -59,11 +56,11 @@ class ValueHolder:
         except requests.exceptions.RequestException as e:
             printError(e)   #error log
             print "request excpetion"
-            setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, colors['yellow'])  #show warning, if url unreachable
+            setSingleAnimation("TRANSMISSIONFB", self.side, NUMBER_LEDS, 10000, colors['yellow'])  #show warning, if url unreachable
         except ValueError as  e:
             printError(e)   #error log
             print "value error"
-            setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, colors['orange'])   #show warning, if parse error
+            setSingleAnimation("TRANSMISSIONFB", self.side, NUMBER_LEDS, 10000, colors['orange'])   #show warning, if parse error
         
         return responseData
         
@@ -75,9 +72,9 @@ class ValueHolder:
             responseData= ElementTree.fromstring(r.content)
         except requests.exceptions.RequestException as e:
             printError(e)  #error log
-            setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, colors['yellow'])  #show warning, if url unreachable
+            setSingleAnimation("TRANSMISSIONFB", self.side, NUMBER_LEDS, 10000, colors['yellow'])  #show warning, if url unreachable
         except ElementTree.ParseError as e:
-            setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, colors['orange'])  #show warning, if parse error
+            setSingleAnimation("TRANSMISSIONFB", self.side, NUMBER_LEDS, 10000, colors['orange'])  #show warning, if parse error
             printError(e)  #error log
 
         return responseData
@@ -134,7 +131,7 @@ class ValueHolder:
         
         if(temp is None):
             printError("XML parsing error: entry "+ self.pathOfValueXML[numberItems-1]+ " not found.")
-            return                                #log error
+            return                         
         
         if isinstance(temp,int):
             self.value=temp
@@ -162,6 +159,13 @@ class ValueHolder:
         elif(self.mode=="Relative"):
             self.displayRelative()
         elif(self.mode=="Moving height"):
+            if(self.isCalibrated is False):
+		print("start calibration") 
+		calibrate()
+                time.sleep(4)
+		print("calibration done")
+		self.isCalibrated = True
+
             self.displayFromBottomToTopMovingHeight()
         else:
             printError("No valid display mode")
@@ -268,45 +272,73 @@ class ValueHolder:
     
     def displayFromBottomToTopMovingHeight(self):
         
-        previousNumberLeds=int(round((self.previousValue-self.referenceValue)/self.stepSize))
+       	previousNumberLeds=int(round((self.previousValue-self.referenceValue)/self.stepSize))
         numberLeds=int(round((self.value-self.referenceValue)/self.stepSize))
-        #print(numberLeds,previousNumberLeds)
+        print(numberLeds,previousNumberLeds)
         #print(self.previousValue,self.referenceValue)
         
         if(numberLeds<0): #set to zero leds
             numberLeds=0
         if(previousNumberLeds<0):
             previousNumberLeds=0 
+        
+        if(numberLeds>NUMBER_LEDS_WITH_HEIGHT-UPPER_BUFFER):
+            numberLeds=NUMBER_LEDS_WITH_HEIGHT-UPPER_BUFFER 
+        if(previousNumberLeds>NUMBER_LEDS_WITH_HEIGHT-UPPER_BUFFER):
+            previousNumberLeds=NUMBER_LEDS_WITH_HEIGHT-UPPER_BUFFER 
             
         if(self.referenceLedInit is False):  #Not initialized
                 setLed(self.side,"ADD",1,self.referenceColor)    #set reference white led
                 self.referenceLedInit=True
                 
         
-        maxQuantity=NUMBER_LEDS-UPPER_BUFFER-REFERENCE_LEDS       #led number range [1,8]       
+        maxQuantity=NUMBER_LEDS-UPPER_BUFFER     #led number range [1,8]       
         
         if(numberLeds<=maxQuantity):
-            if(previousNumberLeds>maxQuantity):
+            if(previousNumberLeds>=maxQuantity):
                 moveToPercentage(0,STEP_MODE_HEIGHT_MOVEMENT)
-            self.displayFromBottomToTop()
+            
+            if(numberLeds<= maxQuantity-REFERENCE_LEDS):
+                self.referenceLedInit=False
+                self.displayFromBottomToTop()
+            else:
+                #setLed(self.side,"REMOVE",maxQuantity,self.color) #remove highest led
+                if(previousNumberLeds<maxQuantity):
+                    setLeds(self.side,"ADD",range(previousNumberLeds,maxQuantity+1)[0:],self.color)
+                    setLed(self.side,"ADD",1,self.color) #remove bottom reference led
+                else:
+                    setLeds(self.side,"ADD",range(0,maxQuantity+1)[0:],self.color)
+                
         
         elif(numberLeds>maxQuantity):
-            newNumberLeds= numberLeds - maxQuantity -1   #number Leds for height adjusted bar, -1 -> don't show reference led
-            self.referenceLedInit=False
+            newNumberLeds= numberLeds - maxQuantity  #number Leds for height adjusted bar
+            #self.referenceLedInit=True
+            #print ("newNumberLeds=", newNumberLeds )
             
-            if(previousNumberLeds<=maxQuantity):
+            if(previousNumberLeds<=maxQuantity-REFERENCE_LEDS):
                 setLed(self.side,"ADD",1,self.color) #e.g. 9 new, 8 old -> remove bottom reference led
+                setLeds(self.side,"ADD",range(previousNumberLeds,maxQuantity+1)[0:],self.color)
                 moveUpNumberLeds(newNumberLeds)#move up, no led change necessary->highest led at index 9
-            elif(previousNumberLeds>maxQuantity):
+            
+            elif(previousNumberLeds>maxQuantity-REFERENCE_LEDS):
                 difference= abs(numberLeds-previousNumberLeds)
                 
                 if(previousNumberLeds<numberLeds):
                     moveUpNumberLeds(difference);
                 elif(previousNumberLeds>numberLeds):
                     moveDownNumberLeds(difference)
-            
-        self.previousValue=self.value  
-         
+        
+        if(numberLeds== NUMBER_LEDS_WITH_HEIGHT):
+            if(self.overfilledWarning is False):
+                setSingleAnimation("BEACON", self.side, NUMBER_LEDS, 10000, self.color)    
+                self.overfilledWarning=True
+        else:
+            if(self.overfilledWarning):
+                setSingleAnimation("OFF", self.side, NUMBER_LEDS, 10000, self.color)  #stop animation
+                setLed(self.side,"REMOVE",NUMBER_LEDS,0)     #clear warning leds,if stopped in on state
+                self.overfilledWarning=False
+                      
+        self.previousValue=self.value           
       
     def printValueHolder(self):
        print("side: ", self.side)

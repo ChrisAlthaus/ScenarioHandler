@@ -4,9 +4,9 @@ from modes import *
 
 MAX_LED_BRIGHTNESS = 100
 STEPS_PER_REVOLUTION = 200 #eigthth step mode
-ONE_REVOLUTION = 15    #mm
+ONE_REVOLUTION = 15.0    #mm
 RESOLUTION_LED_STRIP = 60/100 #60 leds/meter
-LENGTH_ONE_LED = 100/60 #cm
+LENGTH_ONE_LED = 100/60 *10 #mm
 NUMBER_LEDS_WITH_HEIGHT = 19
 NUMBER_LEDS = 11
 LED_CHANGE_TIME_DELAY = 0.4
@@ -34,7 +34,7 @@ def moveUp(stepNumber):
     message=[]
     message.append(modes["UP"])
     
-    message.extend(getByteArrayFromNumber(400,2))
+    message.extend(getByteArrayFromNumber(int(stepNumber),2))
     
     print("UP:"+str(stepNumber))
     send_arduino(message)
@@ -43,7 +43,7 @@ def moveDown(stepNumber):
     message=[]
     message.append(modes["DOWN"])
     
-    message.extend(getByteArrayFromNumber(400,2))
+    message.extend(getByteArrayFromNumber(int(stepNumber),2))
     
     print("DOWN:"+str(stepNumber))
     send_arduino(message)
@@ -198,11 +198,14 @@ def setLevel(level,color,brightness):
 
 def moveUpNumberLeds(numberLeds):
     print("step mode=",currentStepMode)
-    moveUp(getSteps(numberLeds,currentStepMode))
-    print("steps=" + str(getSteps(numberLeds,currentStepMode)))
+    if(numberLeds > 0):
+        print("move up number leds=",numberLeds)
+	moveUp(getSteps(numberLeds,currentStepMode))
+        print("steps=" + str(getSteps(numberLeds,currentStepMode)))
 
 def moveDownNumberLeds(numberLeds):
-    moveDown(getSteps(numberLeds,currentStepMode))
+    if(numberLeds > 0):
+	 moveDown(getSteps(numberLeds,currentStepMode))
     print("steps=" + str(getSteps(numberLeds,currentStepMode)))
 
 def setLedWithEffect(side,led,color,brightness):

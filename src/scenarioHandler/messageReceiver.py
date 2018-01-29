@@ -49,7 +49,7 @@ def receiveMessageAndParse():
           print("Quit current connection")
           break
        if data == "STATUS:":
-	  sendStatusFiles()	
+	  sendStatusFiles()
        else:
           parseMessage(data)
 

@@ -6,7 +6,7 @@ import atexit
 import time
 
 from subprocess import check_output
-
+from subprocess import call
 
 spi= None
             
@@ -26,6 +26,9 @@ def main():
     clearSide("C")
     clearSide("D")
     #time.sleep(2)
+    #calibrate()
+    #time.sleep(4)
+    #moveUpNumberLeds(3)
     #setBrightness(255)
     #time.sleep(2)
     #setBrightness(100)
@@ -103,7 +106,6 @@ def parseMessage(message):
         
         requestURL=values[6]
     
-        
         pathXML=None
         pathJson=None
         if(values[7] != "null"):
@@ -129,7 +131,16 @@ def parseMessage(message):
      
     elif mode=="RESETSIDE":
         side=values[0]
-        resetSide(side)                  
+        resetSide(side)
+
+    elif mode=="SHUTDOWNSYSTEM":
+        clearSide("A")
+        clearSide("B")
+        clearSide("C")
+        clearSide("D")
+        call("sudo shutdown -h now", shell=True)
+        
+                             
 
 def resetSide(side):
     if(side=='A'):
@@ -151,24 +162,7 @@ def resetSide(side):
 
 def resetSingleSideAnimation(side):
    setSingleAnimation("OFF", side, 1,10000,"FFFFFF")
-   setSingleAnimation("OFF",side,1,10000,"FFFFFF")
-   setSingleAnimation("OFF",side,1,10000,"FFFFFF")
-   setSingleAnimation("OFF",side,1,10000,"FFFFFF")
-
-def scaleValue(value): #TODO: scale value, e.g. distribution,intervalls
     
-    return value
-    
-
-def scaleFunctionRain(millimeterPerHour):
-    if(millimeterPerHour<2.5):
-        return 1
-    elif(millimeterPerHour<7.6):
-        return 2
-    elif(millimeterPerHour<30):
-        return 3
-    else:
-        return 4
 
 #DISPLAY:SIDE//DIPLAYCOLOR//REFCOLOR//REFERENCEVALUE//STEPSIZE//MODE//BRIGHTNESS//URL//PATHXML//PATHJSON        
 def addNewValueObject(side,displayColor,referenceColor,referenceValue,stepSize,mode,requestURL,pathOfValueXML,pathOfValueJSON):
